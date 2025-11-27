@@ -21,4 +21,5 @@ wget -O ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-
 # make sure plugins are installed
 echo | vim +PlugInstall +qall &> /dev/null
 
+echo
 echo "You vim configuration is now IDEalized."
