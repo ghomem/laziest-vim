@@ -45,7 +45,6 @@ endfunction
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * NERDTree ~/ | if !argc() == 0 || exists('s:std_in') || !v:this_session == '' | :NERDTreeCWD | wincmd p | endif
-autocmd BufEnter * silent! lcd %:p:h
 autocmd FileType nerdtree nmap <buffer> <CR> go
 autocmd FileType nerdtree nmap <buffer> <Space> o
 autocmd DirChanged * execute 'NERDTreeCWD'
@@ -160,9 +159,6 @@ nnoremap :wq :wqa
 
 " terminal opening
 set splitbelow
-
-" this is commented because it interferes with tig which also uses the terminal
-"autocmd TerminalWinOpen * if &buftype == 'terminal' | resize 10 | endif
 
 " default spacing for indentation
 set sw=2
