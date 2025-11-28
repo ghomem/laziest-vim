@@ -9,7 +9,7 @@ sudo apt install tig
 curl -Ls vim.logical.li | bash
 ```
 
-This will provide you a good looking theme, file tree, smart shortcuts, git integration via `tig` and terminal integration with friendly shortcuts. The result is quite satisfying for management of Infrastructure as Code files but also for development, depending on taste and scale. This configuration has been tested in Ubuntu LTS, from 18.04 to 24.04, and the only external dependencies are Vim plugins. 
+This will provide you a good looking theme, file tree, smart shortcuts, git integration via `tig` and terminal integration with friendly shortcuts. The result is quite satisfying for management of Infrastructure as Code files but also for development, depending on taste and scale. This configuration has been tested in Ubuntu LTS, from 20.04 to 24.04, and the only external dependencies are Vim plugins. 
 
 # details
 
