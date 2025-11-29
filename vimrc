@@ -63,14 +63,19 @@ endfunction
 " updates CWD as you open a file
 " Enter opens the file retaining focus on the tree, sets CWD implicitly
 " Space expands a directory, sets CWD
-" cd changes PWD and sets CWD for Nerdtree
+" cd changes PWD and sets CWD for Nerdtreea - PENDING
 " Show hidden files by default
 
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * NERDTree ~/ | if !argc() == 0 || exists('s:std_in') || !v:this_session == '' | :NERDTreeCWD | wincmd p | endif
+autocmd VimEnter * NERDTree | if !argc() == 0 || exists('s:std_in') || !v:this_session == '' | :NERDTreeCWD | wincmd p | endif
 autocmd FileType nerdtree nmap <buffer> <CR> go
 autocmd FileType nerdtree nmap <buffer> <Space> o
-autocmd DirChanged * execute 'NERDTreeCWD'
+
+" this would be nice but it makes the tig plugin fail in the first launch
+"autocmd DirChanged * execute 'NERDTreeCWD'
+
+let NERDTreeChDirMode=2
+
 let NERDTreeShowHidden=1
 
 " Vim grepper (results on quickfix window -qf)
