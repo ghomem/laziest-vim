@@ -87,7 +87,7 @@ set termguicolors
 let g:tokyonight_style = 'night' " available: night, storm
 let g:tokyonight_enable_italic = 1
 
-Colorscheme tokyonight
+colorscheme tokyonight
 
 " Lightline
 let g:lightline = {
