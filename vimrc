@@ -164,6 +164,9 @@ nnoremap <F3> :NERDTreeToggle \| wincmd p<CR>
 nnoremap <F4> :call ToggleTerminal()<CR>
 nnoremap <F6> :set number!<CR>
 
+" Vim help from F1 also exits with q
+autocmd FileType help nnoremap <buffer> q :x<CR>
+
 " page up goes to scroll mode, moves to the last line and issues page up
 " shift+page up/down in scroll mode already behaves like that, so no more mapping needed
 " needs in in the end to come back to shell mode
