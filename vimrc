@@ -127,7 +127,7 @@ function! ToggleTerminal()
 endfunction
 
 tnoremap <F2> <C-\><C-n>:call ToggleVerticalMaximize()<CR>
-tnoremap <F4> exit<CR>
+tnoremap <F4> <C-\><C-n>:call ToggleTerminal()<CR>
 tnoremap <F3> <C-\><C-n>:NERDTreeToggle<CR><c-w>l<c-w>ji
 
 nnoremap <F3> :NERDTreeToggle \| wincmd p<CR>
