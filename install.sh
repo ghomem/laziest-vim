@@ -34,7 +34,15 @@ if [ ! -f $HOME/.tigrc ]; then
   touch $HOME/.tigrc
 fi
 
+# reference for tig colors:
+# https://jonas.github.io/tig/doc/tigrc.5.html
+
+# highlighted line
 egrep color $HOME/.tigrc | grep -v "^#" | grep -q cursor || echo "color cursor default color237" >> $HOME/.tigrc
+# status summary footer
+egrep color $HOME/.tigrc | grep -v "^#" | grep -q title-focus || echo "color title-focus color237 color113 bold" >> $HOME/.tigrc
+# same while a diffi sub-window is open
+egrep color $HOME/.tigrc | grep -v "^#" | grep -q title-blur || echo "color title-blur color237 color113" >> $HOME/.tigrc
 
 
 echo
