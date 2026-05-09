@@ -212,3 +212,6 @@ set notimeout
 highlight ExtraWhitespace ctermbg=red guibg=#ff7a93
 match ExtraWhitespace /\s\+$/
 
+" clean trailing spaces
+nnoremap <C-x> :%s/\s\+$//e<CR>
+
