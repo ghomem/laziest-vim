@@ -60,6 +60,20 @@ function! ToggleVerticalMaximize()
   endif
 endfunction
 
+" Resize first visible terminal window by {delta} lines
+function! s:ResizeTerminal(delta) abort
+  let curwin = winnr()
+
+  " Find a visible terminal window
+  for w in range(1, winnr('$'))
+    if getbufvar(winbufnr(w), '&buftype') ==# 'terminal'
+      execute w . 'wincmd w'
+      execute 'resize ' . (a:delta > 0 ? '+' : '') . a:delta
+      execute curwin . 'wincmd w'
+      return
+    endif
+  endfor
+endfunction
 
 " ##### NERDTree #####
 "
@@ -140,6 +154,10 @@ nnoremap <silent> <C-Down> <c-w>j
 nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
 
+" let the normal shorcuts also work from the terminal
+tnoremap <silent> <C-Up> <c-w>k
+tnoremap <silent> <C-Left> <c-w>h
+
 " open tig with current file
 " open tig with Project root path
 " open tig blame with current file
@@ -163,10 +181,19 @@ let g:tig_explorer_keymap_vsplit  = ''
 " toggle NERDTree
 " toggle line numbers
 " toggle terminal maximization
+" resize terminal
 
+tnoremap <F3> <C-\><C-n>:NERDTreeToggle<CR><c-w>l<c-w>ji
 tnoremap <F2> <C-\><C-n>:call ToggleVerticalMaximize()<CR>
 tnoremap <F4> <C-\><C-n>:call ToggleTerminal()<CR>
-tnoremap <F3> <C-\><C-n>:NERDTreeToggle<CR><c-w>l<c-w>ji
+
+" Resize terminal from any window
+nnoremap <S-Up>   :call <SID>ResizeTerminal(+1)<CR>
+nnoremap <S-Down> :call <SID>ResizeTerminal(-1)<CR>
+
+" Resize terminal from the terminal
+tnoremap <S-Up>   <C-\><C-n>:resize +1<CR>i
+tnoremap <S-Down> <C-\><C-n>:resize -1<CR>i
 
 nnoremap <F3> :NERDTreeToggle \| wincmd p<CR>
 nnoremap <F4> :call ToggleTerminal()<CR>
