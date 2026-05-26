@@ -75,6 +75,41 @@ function! s:ResizeTerminal(delta) abort
   endfor
 endfunction
 
+function! LightlineBufferTabs()
+  " 1. Get all standard open files
+  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+
+  " 2. Sort the files so the most recently accessed/opened ones are at the end
+  "    (This converts the list into a true chronological timeline)
+  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+
+  " 3. Grab the X most recently used buffers
+  let l:total = len(l:blist)
+  let l:start = l:total > 8 ? l:total - 8 : 0
+  let l:visible_buffers = l:blist[l:start : ]
+
+  " 4. Resort them by their buffer ID so they don't jump around randomly on screen
+  call sort(l:visible_buffers, {a, b -> a - b})
+
+  " 5. Render them onto the tabline
+  let l:current = bufnr('%')
+
+  let l:result = ''
+  for l:bufnr in l:visible_buffers
+    let l:name = bufname(l:bufnr)
+    let l:name = (l:name == '') ? '[No Name]' : fnamemodify(l:name, ':t')
+
+    if l:bufnr == l:current
+      let l:result .= '[' . l:name . '] '
+    else
+      let l:result .= ' ' . l:name . '  '
+    endif
+  endfor
+
+  return l:result
+endfunction
+
+
 " ##### NERDTree #####
 "
 " focus on file if a file is given as an argument, else focus starts on the tree
@@ -142,6 +177,27 @@ let g:lightline = {
       \ },
       \ }
 
+" Always show the top tabline
+set showtabline=2
+
+" Tell lightline to use our custom buffers function at the top left
+let g:lightline = {
+      \ 'tabline': {
+      \   'left': [ [ 'my_buffers' ] ],
+      \   'right': [ [ 'close' ] ]
+      \ },
+      \ 'component_function': {
+      \   'my_buffers': 'LightlineBufferTabs'
+      \ }
+      \ }
+
+" Forces lightline to rebuild the tabline every time a buffer is added,
+" deleted, or entered.
+augroup LightlineBufferGroup
+  autocmd!
+  autocmd BufEnter,BufAdd,BufDelete,BufWinEnter * call lightline#update()
+augroup END
+
 
 " ##### General key mappings #####
 "
@@ -153,6 +209,11 @@ nnoremap <silent> <C-Up> <c-w>k
 nnoremap <silent> <C-Down> <c-w>j
 nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
+
+ " Cycle to the next/previous buffer with Ctrl + n/p
+
+nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ':bnext<CR>')
+nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ':bprevious<CR>')
 
 " let the normal shorcuts also work from the terminal
 tnoremap <silent> <C-Up> <c-w>k
