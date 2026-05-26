@@ -14,6 +14,9 @@ Plug 'mhinz/vim-grepper'
 
 call plug#end()
 
+" ##### Configuration #####
+
+let g:max_visible_buffers = 4
 
 " ##### Functions #####
 
@@ -85,7 +88,7 @@ function! LightlineBufferTabs()
 
   " 3. Grab the X most recently used buffers
   let l:total = len(l:blist)
-  let l:start = l:total > 8 ? l:total - 8 : 0
+  let l:start = l:total > g:max_visible_buffers ? l:total - g:max_visible_buffers : 0
   let l:visible_buffers = l:blist[l:start : ]
 
   " 4. Resort them by their buffer ID so they don't jump around randomly on screen
@@ -126,7 +129,7 @@ function! SmartBufferNext()
   " 1. Grab the exact same X visible buffers from our lightline logic
   let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
-  let l:start = len(l:blist) > 8 ? len(l:blist) - 8 : 0
+  let l:start = len(l:blist) > g:max_visible_buffers ? len(l:blist) - g:max_visible_buffers : 0
   let l:visible = l:blist[l:start : ]
   call sort(l:visible, {a, b -> a - b})
 
@@ -147,7 +150,7 @@ endfunction
 function! SmartBufferPrev()
   let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
-  let l:start = len(l:blist) > 8 ? len(l:blist) - 8 : 0
+  let l:start = len(l:blist) > g:max_visible_buffers ? len(l:blist) - g:max_visible_buffers : 0
   let l:visible = l:blist[l:start : ]
   call sort(l:visible, {a, b -> a - b})
 
