@@ -221,31 +221,24 @@ colorscheme tokyonight
 " in the highlighted lines
 highlight CursorLine guibg=#3a3a3a
 
-" Lightline
 let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
       \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }
-
-" Always show the top tabline
-set showtabline=2
-
-" Tell lightline to use our custom buffers function at the top left
-let g:lightline = {
       \ 'tabline': {
       \   'left': [ [ 'my_buffers' ] ],
       \   'right': [ [ 'close' ] ]
       \ },
       \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead',
       \   'my_buffers': 'LightlineBufferTabs'
       \ }
       \ }
+
+" Always show the top tabline
+set showtabline=2
 
 " Forces lightline to rebuild the tabline every time a buffer is added,
 " deleted, or entered.
