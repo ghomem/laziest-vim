@@ -109,6 +109,46 @@ function! LightlineBufferTabs()
   return l:result
 endfunction
 
+function! SmartBufferNext()
+  " 1. Grab the exact same X visible buffers from our lightline logic
+  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+  let l:start = len(l:blist) > 8 ? len(l:blist) - 8 : 0
+  let l:visible = l:blist[l:start : ]
+  call sort(l:visible, {a, b -> a - b})
+
+  " 2. Find where we are in that X-tab list
+  let l:current = bufnr('%')
+  let l:idx = index(l:visible, l:current)
+
+  " 3. Move to the next tab in the loop, or wrap around to the first one
+  if l:idx != -1
+    let l:next_idx = (l:idx + 1) % len(l:visible)
+    execute 'buffer ' . l:visible[l:next_idx]
+  else
+    " If we are in NERDTree, jump to the most recently used visible buffer
+    execute 'buffer ' . l:visible[-1]
+  endif
+endfunction
+
+function! SmartBufferPrev()
+  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+  let l:start = len(l:blist) > 8 ? len(l:blist) - 8 : 0
+  let l:visible = l:blist[l:start : ]
+  call sort(l:visible, {a, b -> a - b})
+
+  let l:current = bufnr('%')
+  let l:idx = index(l:visible, l:current)
+
+  " Move to the previous tab, or wrap around to the last one
+  if l:idx != -1
+    let l:prev_idx = (l:idx - 1 + len(l:visible)) % len(l:visible)
+    execute 'buffer ' . l:visible[l:prev_idx]
+  else
+    execute 'buffer ' . l:visible[-1]
+  endif
+endfunction
 
 " ##### NERDTree #####
 "
@@ -211,9 +251,8 @@ nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
 
  " Cycle to the next/previous buffer with Ctrl + n/p
-
-nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ':bnext<CR>')
-nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ':bprevious<CR>')
+nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferNext()\<CR>")
+nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferPrev()\<CR>")
 
 " let the normal shorcuts also work from the terminal
 tnoremap <silent> <C-Up> <c-w>k
