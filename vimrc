@@ -94,6 +94,19 @@ function! LightlineBufferTabs()
   " 5. Render them onto the tabline
   let l:current = bufnr('%')
 
+  " FIX: If inside NERDTree, find which of our visible buffers was used most recently
+  if bufname(l:current) =~ 'NERD_tree'
+    " Since visible_buffers is sorted by buffer ID in step 4, let's find the one
+    " that has the highest 'lastused' timestamp to identify the active file.
+    let l:most_recent = l:visible_buffers[0]
+    for l:b in l:visible_buffers
+      if getbufinfo(l:b)[0].lastused > getbufinfo(l:most_recent)[0].lastused
+        let l:most_recent = l:b
+      endif
+    endfor
+    let l:current = l:most_recent
+  endif
+
   let l:result = ''
   for l:bufnr in l:visible_buffers
     let l:name = bufname(l:bufnr)
@@ -251,6 +264,7 @@ nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
 
  " Cycle to the next/previous buffer with Ctrl + n/p
+
 nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferNext()\<CR>")
 nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferPrev()\<CR>")
 
