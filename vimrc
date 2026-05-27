@@ -78,13 +78,19 @@ function! s:ResizeTerminal(delta) abort
   endfor
 endfunction
 
+function! s:GetVisibleBuffers()
+  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+  let l:start = len(l:blist) > g:max_visible_buffers ? len(l:blist) - g:max_visible_buffers : 0
+  let l:visible = l:blist[l:start : ]
+  call sort(l:visible, {a, b -> a - b})
+  return l:visible
+endfunction
+
 function! LightlineBufferTabs()
 
   " Find the visible buffers
   let l:visible_buffers = s:GetVisibleBuffers()
-
-  " Resort them by their buffer ID so they don't jump around randomly on screen
-  call sort(l:visible_buffers, {a, b -> a - b})
 
   " Render them onto the tabline
   let l:current = bufnr('%')
@@ -115,15 +121,6 @@ function! LightlineBufferTabs()
   endfor
 
   return l:result
-endfunction
-
-function! s:GetVisibleBuffers()
-  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
-  let l:start = len(l:blist) > g:max_visible_buffers ? len(l:blist) - g:max_visible_buffers : 0
-  let l:visible = l:blist[l:start : ]
-  call sort(l:visible, {a, b -> a - b})
-  return l:visible
 endfunction
 
 function! SmartBufferNext()
