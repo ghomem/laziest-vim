@@ -97,7 +97,7 @@ function! LightlineBufferTabs()
 
   " FIX: If inside NERDTree, find which of our visible buffers was used most recently
   if &filetype ==# 'nerdtree'
-    " Since visible_buffers is sorted by buffer ID in step 4, let's find the one
+    " Since visible_buffers is sorted by buffer ID let's find the one
     " that has the highest 'lastused' timestamp to identify the active file.
     let l:most_recent = l:visible_buffers[0]
     for l:b in l:visible_buffers
