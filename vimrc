@@ -234,7 +234,6 @@ nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
 
  " Cycle to the next/previous buffer with Ctrl + n/p
-
 nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferNext()\<CR>")
 nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferPrev()\<CR>")
 
