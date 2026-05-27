@@ -79,22 +79,14 @@ function! s:ResizeTerminal(delta) abort
 endfunction
 
 function! LightlineBufferTabs()
-  " 1. Get all standard open files
-  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
 
-  " 2. Sort the files so the most recently accessed/opened ones are at the end
-  "    (This converts the list into a true chronological timeline)
-  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+  " Find the visible buffers
+  let l:visible_buffers = s:GetVisibleBuffers()
 
-  " 3. Grab the X most recently used buffers
-  let l:total = len(l:blist)
-  let l:start = l:total > g:max_visible_buffers ? l:total - g:max_visible_buffers : 0
-  let l:visible_buffers = l:blist[l:start : ]
-
-  " 4. Resort them by their buffer ID so they don't jump around randomly on screen
+  " Resort them by their buffer ID so they don't jump around randomly on screen
   call sort(l:visible_buffers, {a, b -> a - b})
 
-  " 5. Render them onto the tabline
+  " Render them onto the tabline
   let l:current = bufnr('%')
 
   " FIX: If inside NERDTree, find which of our visible buffers was used most recently
