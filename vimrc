@@ -14,6 +14,9 @@ Plug 'mhinz/vim-grepper'
 
 call plug#end()
 
+" ##### Configuration #####
+
+let g:max_visible_buffers = 4
 
 " ##### Functions #####
 
@@ -75,6 +78,65 @@ function! s:ResizeTerminal(delta) abort
   endfor
 endfunction
 
+function! s:GetVisibleBuffers()
+  let l:blist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  call sort(l:blist, {a, b -> getbufinfo(a)[0].lastused - getbufinfo(b)[0].lastused})
+  let l:start = len(l:blist) > g:max_visible_buffers ? len(l:blist) - g:max_visible_buffers : 0
+  let l:visible = l:blist[l:start : ]
+  call sort(l:visible, {a, b -> a - b})
+  return l:visible
+endfunction
+
+function! LightlineBufferTabs()
+
+  " Find the visible buffers
+  let l:visible_buffers = s:GetVisibleBuffers()
+
+  " Render them onto the tabline
+  let l:current = bufnr('%')
+
+  " FIX: If inside NERDTree, find which of our visible buffers was used most recently
+  if &filetype ==# 'nerdtree'
+    " Since visible_buffers is sorted by buffer ID let's find the one
+    " that has the highest 'lastused' timestamp to identify the active file.
+    let l:most_recent = l:visible_buffers[0]
+    for l:b in l:visible_buffers
+      if getbufinfo(l:b)[0].lastused > getbufinfo(l:most_recent)[0].lastused
+        let l:most_recent = l:b
+      endif
+    endfor
+    let l:current = l:most_recent
+  endif
+
+  let l:result = ''
+  for l:bufnr in l:visible_buffers
+    let l:name = bufname(l:bufnr)
+    let l:name = (l:name == '') ? '[No Name]' : fnamemodify(l:name, ':t')
+
+    if l:bufnr == l:current
+      let l:result .= '[' . l:name . '] '
+    else
+      let l:result .= ' ' . l:name . '  '
+    endif
+  endfor
+
+  return l:result
+endfunction
+
+function! SmartBufferNext()
+  let l:visible = s:GetVisibleBuffers()
+  let l:idx = index(l:visible, bufnr('%'))
+  let l:next_idx = l:idx != -1 ? (l:idx + 1) % len(l:visible) : -1
+  execute 'buffer ' . l:visible[l:next_idx]
+endfunction
+
+function! SmartBufferPrev()
+  let l:visible = s:GetVisibleBuffers()
+  let l:idx = index(l:visible, bufnr('%'))
+  let l:prev_idx = l:idx != -1 ? (l:idx - 1 + len(l:visible)) % len(l:visible) : -1
+  execute 'buffer ' . l:visible[l:prev_idx]
+endfunction
+
 " ##### NERDTree #####
 "
 " focus on file if a file is given as an argument, else focus starts on the tree
@@ -130,17 +192,31 @@ colorscheme tokyonight
 " in the highlighted lines
 highlight CursorLine guibg=#3a3a3a
 
-" Lightline
 let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
       \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
+      \ 'tabline': {
+      \   'left': [ [ 'my_buffers' ] ],
+      \   'right': [ [ 'close' ] ]
       \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead',
+      \   'my_buffers': 'LightlineBufferTabs'
       \ }
+      \ }
+
+" Always show the top tabline
+set showtabline=2
+
+" Forces lightline to rebuild the tabline every time a buffer is added,
+" deleted, or entered.
+augroup LightlineBufferGroup
+  autocmd!
+  autocmd BufEnter,BufAdd,BufDelete,BufWinEnter * call lightline#update()
+augroup END
 
 
 " ##### General key mappings #####
@@ -153,6 +229,10 @@ nnoremap <silent> <C-Up> <c-w>k
 nnoremap <silent> <C-Down> <c-w>j
 nnoremap <silent> <S-Tab> <c-w>w
 tnoremap <S-Tab> <C-w>w
+
+ " Cycle to the next/previous buffer with Ctrl + n/p
+nnoremap <expr> <C-n> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferNext()\<CR>")
+nnoremap <expr> <C-p> (&filetype ==# 'nerdtree' ? '' : ":call SmartBufferPrev()\<CR>")
 
 " let the normal shorcuts also work from the terminal
 tnoremap <silent> <C-Up> <c-w>k
