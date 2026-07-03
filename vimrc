@@ -2,12 +2,12 @@ call plug#begin()
 
 " List your plugins here
 Plug 'ghomem/nerdtree'
-Plug 'ghifarit53/tokyonight-vim'
-Plug 'itchyny/lightline.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'rodjek/vim-puppet'
-Plug 'iberianpig/tig-explorer.vim'
-Plug 'mhinz/vim-grepper'
+Plug 'ghomem/tokyonight-vim'
+Plug 'ghomem/lightline.vim'
+Plug 'ghomem/vim-fugitive'
+Plug 'ghomem/vim-puppet'
+Plug 'ghomem/tig-explorer.vim'
+Plug 'ghomem/vim-grepper'
 
 " Uncomment JEDI if you use Python
 "Plug 'davidhalter/jedi-vim'
